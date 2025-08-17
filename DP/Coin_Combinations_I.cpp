@@ -78,10 +78,6 @@ void solve()
 
     vtl dp(tar + 1, 0);
     dp[0] = 1;
-
-    // if order matters then outer loop is target sum , and inner loop is coins
-    // if order does not matter then outer loop is coins, and inner loop is target sum
-    // here order does not matter, so we iterate over coins first
     FOR(j, 1, tar + 1, 1)
     for (int i : v)
         if (j >= i)
