@@ -70,21 +70,19 @@ int factorial(int a) { return tgamma(a + 1); }
 
 void solve()
 {
-    int n, tar;
-    cin >> n >> tar;
-    vti v(n);
-    for (auto &x : v)
-        cin >> x;
-
-    vtl dp(tar + 1, 0);
-    dp[0] = 1;
-
-    FOR(j, 1, tar + 1, 1)
-    for (int i : v)
-        if (j >= i)
-            dp[j] = (dp[j] + dp[j - i]) % MOD;
-
-    cout << dp[tar] << nline;
+    int n, target;
+    cin>>n>>target;
+    vti coins(n);
+    FOR(i, 0, n, 1)
+        cin >> coins[i];
+    const long long INF = 1e9 + 1;
+    vti dp(target + 1, INF);
+    dp[0] = 0;
+    for (int c : coins)
+        for (int s = c; s <= target; ++s)
+            if (dp[s - c] != INF)
+                dp[s] = min(dp[s], dp[s - c] + 1);
+    cout << (dp[target] == INF ? -1 : dp[target]) << nline;
 }
 
 int main()
