@@ -120,8 +120,10 @@ void solve()
     for (int j = need; j <= n; ++j)
         ans += dp[n][j];
 
-    cout.setf(ios::fixed);
-    cout << setprecision(10) << ans << nline;
+    // cout.setf(ios::fixed);
+    // cout << setprecision(10) << ans << nline;
+    // or to make precision we can do
+    printf("%.10lf\n", ans);
 }
 
 int main()
