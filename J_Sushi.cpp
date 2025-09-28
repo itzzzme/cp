@@ -1,4 +1,4 @@
-// Created at: 2025-09-28 13:55:18
+// Created at: 2025-09-28 14:46:54
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -17,11 +17,11 @@ using namespace std;
 #define vts vector<string>
 #define vvts vector<vts>
 #define vvtd vector<vtd>
-#define vvtf vector<vtd>
+#define vvtf vector<vtf>
 #define vtb vector<bool>
 #define vvtb vector<vtb>
 #define pii pair<int, int>
-#define pll pair<ll, ll>    
+#define pll pair<ll, ll>
 #define vpi vector<pii>
 #define vpl vector<pll>
 #define pic pair<int, char>
@@ -73,59 +73,68 @@ int factorial(int a) { return tgamma(a + 1); }
 //------------------------------------------------------------------------------
 
 // observations :
-
 /*
-    so there are N coins
-    I have to make sure no. of heads are in major
-    then I have to calculate that for specific no. of heads what's the possibility
+  die have equal probability for each plate
+  so :
+  At any state (x1, x2, x3) = (how many plates have 1, 2, 3 sushi left),
 
-    let's say there will be two parameters
+    I can compute the expected moves E[x1][x2][x3] with a recurrence:
 
-    n = no. of coins
-    n_h = no. of heads
+    With probability x1/N, I pick a plate with 1 sushi -> it becomes empty (so state (x1-1, x2, x3)).
 
-    dp[n][n_h] = possibility where no. of coins is n and no. of heads is n_h
+    With probability x2/N, I pick a plate with 2 sushi -> it becomes (x1+1, x2-1, x3).
 
-    so minimum number of heads that must be in the n of coins is
-        (n+1)/2 since n is always odd
+    With probability x3/N, I pick a plate with 3 sushi -> it becomes (x1, x2+1, x3-1).
 
-    inside that there will be permutation, and I have to consider all permutations
-    since permutations matter the coins order will be in inner loop
+    With probability (N - (x1+x2+x3))/N, I pick an empty plate -> state doesn’t change.
 */
+
+static double dp[307][307][307];
 
 void solve()
 {
     int n;
     cin >> n;
-    vtd p(n);
+    int c1 = 0, c2 = 0, c3 = 0;
     for (int i = 0; i < n; ++i)
-        cin >> p[i];
-
-    vvtd dp(n + 1, vtd(n + 1, 0.0));
-
-    dp[0][0] = 1.0;
-
-    for (int i = 1; i <= n; ++i)
     {
-        for (int j = 0; j <= i; ++j)
+        int temp;
+        cin >> temp;
+        if (temp == 1)
+            ++c1;
+        else if (temp == 2)
+            ++c2;
+        else if (temp == 3)
+            ++c3;
+    }
+
+    dp[0][0][0] = 0.0; // already zero but explicit for clarity
+
+    // compute by increasing total s = i+j+k
+    for (int s = 1; s <= n; ++s)
+    {
+        // iterate i and j in descending order so references like dp[i+1][j-1][k]
+        // and dp[i][j+1][k-1] (same s) are already computed
+        for (int i = s; i >= 0; --i)
         {
-            double takeHead = (j - 1 >= 0) ? dp[i - 1][j - 1] * p[i - 1] : 0.0;
-            double takeTail = dp[i - 1][j] * (1.0 - p[i - 1]);
-            dp[i][j] = takeHead + takeTail;
+            for (int j = s - i; j >= 0; --j)
+            {
+                int k = s - i - j;
+                if (k < 0)
+                    continue;
+                double e = n; // numerator starts with n (because of the +1 * n)
+                if (i > 0)
+                    e += i * dp[i - 1][j][k];
+                if (j > 0)
+                    e += j * dp[i + 1][j - 1][k];
+                if (k > 0)
+                    e += k * dp[i][j + 1][k - 1];
+                dp[i][j][k] = e / (double)s;
+            }
         }
     }
 
-    int need = (n + 1) / 2;
-    double ans = 0.0;
-    for (int j = need; j <= n; ++j)
-        ans += dp[n][j];
-
-    // cout.setf(ios::fixed);
-    // cout << setprecision(10) << ans << nline;
-    // or to make precision we can do
-    // printf("%.10lf\n", ans);
-    // or we can use cout.precision(10) which is already defined inside main function
-    cout<<ans;
+    cout << dp[c1][c2][c3] << nline;
 }
 
 int main()
