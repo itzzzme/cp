@@ -123,7 +123,9 @@ void solve()
     // cout.setf(ios::fixed);
     // cout << setprecision(10) << ans << nline;
     // or to make precision we can do
-    printf("%.10lf\n", ans);
+    // printf("%.10lf\n", ans);
+    // or we can use cout.precision(10) which is already defined inside main function
+    cout<<ans;
 }
 
 int main()
